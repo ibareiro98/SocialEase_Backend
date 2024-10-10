@@ -22,7 +22,7 @@ CREATE TABLE production.users (
     email VARCHAR(100) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     active BOOLEAN NOT NULL,
-    role_id INTEGER NOT NULL,
+    role_id SMALLINT NOT NULL,
     last_login TIMESTAMP,
     created_at TIMESTAMP,
     CONSTRAINT fk_role_id FOREIGN KEY (role_id) REFERENCES production.roles (role_id)
@@ -33,7 +33,7 @@ CREATE TABLE production.posts (
     user_id INTEGER NOT NULL,
     content TEXT NOT NULL,
     scheduled_at TIMESTAMP NOT NULL,
-    state_id INTEGER NOT NULL,
+    state_id SMALLINT NOT NULL,
     created_at TIMESTAMP NOT NULL,
     CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES production.users (user_id),
     CONSTRAINT fk_state_id FOREIGN KEY (state_id) REFERENCES production.states (state_id)
@@ -42,7 +42,7 @@ CREATE TABLE production.posts (
 CREATE TABLE production.social_accounts (
     social_account_id BIGSERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
-    platform_id INTEGER NOT NULL,
+    platform_id SMALLINT NOT NULL,
     access_token VARCHAR(255) NOT NULL,
     account_name VARCHAR(255) NOT NULL,
     account_id VARCHAR(255) NOT NULL,
@@ -52,32 +52,31 @@ CREATE TABLE production.social_accounts (
 );
 
 CREATE TABLE production.post_social_accounts (
-    post_id BIGSERIAL NOT NULL,
-    social_account_id INTEGER NOT NULL,
+    post_id BIGINT NOT NULL,
+    social_account_id BIGINT NOT NULL,
     published_at TIMESTAMP,
-    PRIMARY KEY (post_id, social_account_id),
-    CONSTRAINT fk_post_id FOREIGN KEY (post_id) REFERENCES production.posts (post_id),
-    CONSTRAINT fk_social_account_id FOREIGN KEY (social_account_id) REFERENCES production.social_accounts (social_account_id)
+    PRIMARY KEY (post_id, social_account_id)
 );
 
 CREATE TABLE production.post_metrics (
     post_metric_id BIGSERIAL PRIMARY KEY,
-    post_social_account_id INTEGER NOT NULL,
+    post_id BIGINT NOT NULL,
+    social_account_id BIGINT NOT NULL,
     likes INTEGER NOT NULL,
     shares INTEGER NOT NULL,
     comments INTEGER NOT NULL,
     impressions INTEGER NOT NULL,
     collected_at TIMESTAMP NOT NULL,
-    CONSTRAINT fk_post_social_account_id FOREIGN KEY (post_social_account_id) REFERENCES production.post_social_accounts (post_id, social_account_id)
+    CONSTRAINT fk_post_social_account_id FOREIGN KEY (post_id, social_account_id) REFERENCES production.post_social_accounts (post_id, social_account_id)
 );
 
-create table production.post_logs (
-    post_log_id BIGSERIAL primary key,
-    post_social_account_id INTEGER not null,
-    state_id INTEGER not null,
+CREATE TABLE production.post_logs (
+    post_log_id BIGSERIAL PRIMARY KEY,
+    post_id BIGINT NOT NULL,
+    social_account_id BIGINT NOT NULL,
+    state_id SMALLINT NOT NULL,
     error_message TEXT,
-    logged_at TIMESTAMP not null,
-    constraint fk_post_social_account_id foreign key (post_social_account_id) references production.post_social_accounts (post_id,
-social_account_id),
-    constraint fk_state_id foreign key (state_id) references states (state_id)
+    logged_at TIMESTAMP NOT NULL,
+    CONSTRAINT fk_post_social_account_id FOREIGN KEY (post_id, social_account_id) REFERENCES production.post_social_accounts (post_id, social_account_id),
+    CONSTRAINT fk_state_id FOREIGN KEY (state_id) REFERENCES production.states (state_id)
 );
