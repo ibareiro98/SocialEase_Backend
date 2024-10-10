@@ -1,28 +1,26 @@
 CREATE DATABASE socialease_db;
 
-\c socialease_db;
-
 CREATE SCHEMA production;
 
 SET search_path TO production;
 
-CREATE TABLE platforms (
+CREATE TABLE production.platforms (
     platform_id SMALLINT PRIMARY KEY,
     description VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE states (
+CREATE TABLE production.states (
     state_id SMALLINT PRIMARY KEY,
     description VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE roles (
+CREATE TABLE production.roles (
     role_id SMALLINT PRIMARY KEY,
     description VARCHAR(50) NOT NULL,
     active BOOLEAN NOT NULL
 );
 
-CREATE TABLE users (
+CREATE TABLE production.users (
     user_id INTEGER PRIMARY KEY,
     username VARCHAR(75) NOT NULL,
     email VARCHAR(100) NOT NULL,
@@ -34,7 +32,7 @@ CREATE TABLE users (
     CONSTRAINT fk_role_id FOREIGN KEY (role_id) REFERENCES roles (role_id)
 );
 
-CREATE TABLE posts (
+CREATE TABLE production.posts (
     post_id BIGSERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
     content TEXT NOT NULL,
@@ -45,7 +43,7 @@ CREATE TABLE posts (
     CONSTRAINT fk_state_id FOREIGN KEY (state_id) REFERENCES states (state_id)
 );
 
-CREATE TABLE social_accounts (
+CREATE TABLE production.social_accounts (
     social_account_id BIGSERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
     platform_id INTEGER NOT NULL,
@@ -57,7 +55,7 @@ CREATE TABLE social_accounts (
     CONSTRAINT fk_platform_id FOREIGN KEY (platform_id) REFERENCES platforms (platform_id)
 );
 
-CREATE TABLE post_social_accounts (
+CREATE TABLE production.post_social_accounts (
     post_id BIGSERIAL NOT NULL,
     social_account_id INTEGER NOT NULL,
     published_at TIMESTAMP,
@@ -66,7 +64,7 @@ CREATE TABLE post_social_accounts (
     CONSTRAINT fk_social_account_id FOREIGN KEY (social_account_id) REFERENCES social_accounts (social_account_id)
 );
 
-CREATE TABLE post_metrics (
+CREATE TABLE production.post_metrics (
     post_metric_id BIGSERIAL PRIMARY KEY,
     post_social_account_id INTEGER NOT NULL,
     likes INTEGER NOT NULL,
@@ -77,7 +75,7 @@ CREATE TABLE post_metrics (
     CONSTRAINT fk_post_social_account_id FOREIGN KEY (post_social_account_id) REFERENCES post_social_accounts (post_id, social_account_id)
 );
 
-create table post_logs (
+create table production.post_logs (
     post_log_id BIGSERIAL primary key,
     post_social_account_id INTEGER not null,
     state_id INTEGER not null,
