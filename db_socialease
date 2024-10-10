@@ -1,21 +1,29 @@
+CREATE DATABASE socialease_db;
+
+\c socialease_db;
+
+CREATE SCHEMA production;
+
+SET search_path TO production;
+
 CREATE TABLE platforms (
-    platform_id BIGSERIAL PRIMARY KEY,
+    platform_id SMALLINT PRIMARY KEY,
     description VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE states (
-    state_id BIGSERIAL PRIMARY KEY,
+    state_id SMALLINT PRIMARY KEY,
     description VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE roles (
-    role_id BIGSERIAL PRIMARY KEY,
+    role_id SMALLINT PRIMARY KEY,
     description VARCHAR(50) NOT NULL,
     active BOOLEAN NOT NULL
 );
 
 CREATE TABLE users (
-    user_id BIGSERIAL PRIMARY KEY,
+    user_id INTEGER PRIMARY KEY,
     username VARCHAR(75) NOT NULL,
     email VARCHAR(100) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
@@ -50,7 +58,7 @@ CREATE TABLE social_accounts (
 );
 
 CREATE TABLE post_social_accounts (
-    post_id INTEGER NOT NULL,
+    post_id BIGSERIAL NOT NULL,
     social_account_id INTEGER NOT NULL,
     published_at TIMESTAMP,
     PRIMARY KEY (post_id, social_account_id),
@@ -69,12 +77,13 @@ CREATE TABLE post_metrics (
     CONSTRAINT fk_post_social_account_id FOREIGN KEY (post_social_account_id) REFERENCES post_social_accounts (post_id, social_account_id)
 );
 
-CREATE TABLE post_logs (
-    post_log_id BIGSERIAL PRIMARY KEY,
-    post_social_account_id INTEGER NOT NULL,
-    state_id INTEGER NOT NULL,
+create table post_logs (
+    post_log_id BIGSERIAL primary key,
+    post_social_account_id INTEGER not null,
+    state_id INTEGER not null,
     error_message TEXT,
-    logged_at TIMESTAMP NOT NULL,
-    CONSTRAINT fk_post_social_account_id FOREIGN KEY (post_social_account_id) REFERENCES post_social_accounts (post_id, social_account_id),
-    CONSTRAINT fk_state_id FOREIGN KEY (state_id) REFERENCES states (state_id)
+    logged_at TIMESTAMP not null,
+    constraint fk_post_social_account_id foreign key (post_social_account_id) references post_social_accounts (post_id,
+social_account_id),
+    constraint fk_state_id foreign key (state_id) references states (state_id)
 );
