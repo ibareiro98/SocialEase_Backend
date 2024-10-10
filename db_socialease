@@ -29,7 +29,7 @@ CREATE TABLE production.users (
 );
 
 CREATE TABLE production.posts (
-    post_id BIGSERIAL PRIMARY KEY,
+    post_id BIGINT PRIMARY KEY,
     user_id INTEGER NOT NULL,
     content TEXT NOT NULL,
     scheduled_at TIMESTAMP NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE production.posts (
 );
 
 CREATE TABLE production.social_accounts (
-    social_account_id BIGSERIAL PRIMARY KEY,
+    social_account_id BIGINT PRIMARY KEY,
     user_id INTEGER NOT NULL,
     platform_id SMALLINT NOT NULL,
     access_token VARCHAR(255) NOT NULL,
@@ -59,7 +59,7 @@ CREATE TABLE production.post_social_accounts (
 );
 
 CREATE TABLE production.post_metrics (
-    post_metric_id BIGSERIAL PRIMARY KEY,
+    post_metric_id BIGINT PRIMARY KEY,
     post_id BIGINT NOT NULL,
     social_account_id BIGINT NOT NULL,
     likes INTEGER NOT NULL,
@@ -71,7 +71,7 @@ CREATE TABLE production.post_metrics (
 );
 
 CREATE TABLE production.post_logs (
-    post_log_id BIGSERIAL PRIMARY KEY,
+    post_log_id BIGINT PRIMARY KEY,
     post_id BIGINT NOT NULL,
     social_account_id BIGINT NOT NULL,
     state_id SMALLINT NOT NULL,
