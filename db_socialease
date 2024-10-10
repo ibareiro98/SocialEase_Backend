@@ -1,0 +1,80 @@
+CREATE TABLE platforms (
+    platform_id BIGSERIAL PRIMARY KEY,
+    description VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE states (
+    state_id BIGSERIAL PRIMARY KEY,
+    description VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE roles (
+    role_id BIGSERIAL PRIMARY KEY,
+    description VARCHAR(50) NOT NULL,
+    active BOOLEAN NOT NULL
+);
+
+CREATE TABLE users (
+    user_id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(75) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    active BOOLEAN NOT NULL,
+    role_id INTEGER NOT NULL,
+    last_login TIMESTAMP,
+    created_at TIMESTAMP,
+    CONSTRAINT fk_role_id FOREIGN KEY (role_id) REFERENCES roles (role_id)
+);
+
+CREATE TABLE posts (
+    post_id BIGSERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    content TEXT NOT NULL,
+    scheduled_at TIMESTAMP NOT NULL,
+    state_id INTEGER NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (user_id),
+    CONSTRAINT fk_state_id FOREIGN KEY (state_id) REFERENCES states (state_id)
+);
+
+CREATE TABLE social_accounts (
+    social_account_id BIGSERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    platform_id INTEGER NOT NULL,
+    access_token VARCHAR(255) NOT NULL,
+    account_name VARCHAR(255) NOT NULL,
+    account_id VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (user_id),
+    CONSTRAINT fk_platform_id FOREIGN KEY (platform_id) REFERENCES platforms (platform_id)
+);
+
+CREATE TABLE post_social_accounts (
+    post_id INTEGER NOT NULL,
+    social_account_id INTEGER NOT NULL,
+    published_at TIMESTAMP,
+    PRIMARY KEY (post_id, social_account_id),
+    CONSTRAINT fk_post_id FOREIGN KEY (post_id) REFERENCES posts (post_id),
+    CONSTRAINT fk_social_account_id FOREIGN KEY (social_account_id) REFERENCES social_accounts (social_account_id)
+);
+
+CREATE TABLE post_metrics (
+    post_metric_id BIGSERIAL PRIMARY KEY,
+    post_social_account_id INTEGER NOT NULL,
+    likes INTEGER NOT NULL,
+    shares INTEGER NOT NULL,
+    comments INTEGER NOT NULL,
+    impressions INTEGER NOT NULL,
+    collected_at TIMESTAMP NOT NULL,
+    CONSTRAINT fk_post_social_account_id FOREIGN KEY (post_social_account_id) REFERENCES post_social_accounts (post_id, social_account_id)
+);
+
+CREATE TABLE post_logs (
+    post_log_id BIGSERIAL PRIMARY KEY,
+    post_social_account_id INTEGER NOT NULL,
+    state_id INTEGER NOT NULL,
+    error_message TEXT,
+    logged_at TIMESTAMP NOT NULL,
+    CONSTRAINT fk_post_social_account_id FOREIGN KEY (post_social_account_id) REFERENCES post_social_accounts (post_id, social_account_id),
+    CONSTRAINT fk_state_id FOREIGN KEY (state_id) REFERENCES states (state_id)
+);
